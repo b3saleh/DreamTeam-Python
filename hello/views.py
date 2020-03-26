@@ -1,11 +1,14 @@
 from django.shortcuts import render
-from .models import user, tryout, criterion
+from .models import user, tryout, criterion, player, session
 from rest_framework.decorators import api_view
 from Serializers.checkUser import userID, userIDSerializer
 from Serializers.isValid import isValid, isValidSerializer
 from Serializers.listTryouts import tryoutForList, listTryoutsSerializer
+from Serializers.listSessions import sessionForList, listSessionsSerializer
 from Serializers.listCriteria import criterionForList, listCriteriaSerializer
+from Serializers.listPlayers import playerForList, listPlayersSerializer
 from rest_framework.response import Response
+from django.db.models import Q
 
 
 # Create your views here.
@@ -39,18 +42,15 @@ def createUser(request):
 
 @api_view(['POST'])
 def createTryout(request):
-    username = request.query_params.get('username') # USE THIS LATER FOR INDIVIDUAL TRYOUT LISTS
-    thisUser = user.objects.get(username=username)
+    userID = request.query_params.get('userID') # USE THIS LATER FOR INDIVIDUAL TRYOUT LISTS
+    thisUser = user.objects.get(id=userID)
     tryoutName = request.query_params.get('tryoutName')
     thisTryout = tryout(admin=thisUser, name=tryoutName)
     thisTryout.save()
-    i = 1
-    criterionName = request.query_params.get('criterion1')
-    while criterionName is not None:
+    criteriaList = request.GET.getlist('criteria')
+    for criterionName in criteriaList:
         thisCriterion = criterion(tryout=thisTryout, name=criterionName)
         thisCriterion.save()
-        i += 1
-        criterionName = request.query_params.get('criterion' + str(i))
     return Response(isValidSerializer(isValid(True)).data)
 
 
@@ -66,8 +66,12 @@ def deleteTryout(request):
 def listTryouts(request):
     userID = request.query_params.get('userID')
     thisUser = user.objects.get(id=userID)
-    tryoutIDs = tryout.objects.filter(admin=thisUser).values_list('id', flat=True)
-    tryoutNames = tryout.objects.filter(admin=thisUser).values_list('name', flat=True)
+    allTryouts = tryout.objects.filter(Q(admin=thisUser) | Q(executives=thisUser))
+    tryoutIDs = []
+    tryoutNames = []
+    for thisTryout in allTryouts:
+        tryoutIDs.insert(len(tryoutIDs), thisTryout.id)
+        tryoutNames.insert(len(tryoutNames), thisTryout.name)
     return Response(listTryoutsSerializer(tryoutForList(tryoutIDs, tryoutNames)).data)
 
 
@@ -75,5 +79,82 @@ def listTryouts(request):
 def listCriteria(request):
     tryoutID = request.query_params.get('tryoutID')
     thisTryout = tryout.objects.get(id=tryoutID)
-    criteriaList = criterion.objects.filter(tryout=thisTryout).values_list('name', flat=True)
-    return Response(listCriteriaSerializer(criterionForList(criteriaList)).data)
+    criteriaList = criterion.objects.filter(tryout=thisTryout)
+    criteriaNames = []
+    for thisCriterion in criteriaList:
+        criteriaNames.insert(len(criteriaNames), thisCriterion.name)
+    return Response(listCriteriaSerializer(criterionForList(criteriaNames)).data)
+
+
+@api_view(['POST'])
+def addExecs(request):
+    tryoutID = request.query_params.get('tryoutID')
+    execEmails = request.GET.getlist('execEmails')
+    thisTryout = tryout.objects.get(id=tryoutID)
+    for thisEmail in execEmails:
+        thisExec = user.objects.get(email=thisEmail)
+        thisTryout.executives.add(thisExec)
+    return Response(isValidSerializer(isValid(True)).data)
+
+@api_view(['POST'])
+def addSession(request):
+    tryoutID = request.query_params.get('tryoutID')
+    thisTryout = tryout.objects.get(id=tryoutID)
+    startTime = request.query_params.get('startTime')
+    endTime = request.query_params.get('endTime')
+    location = request.query_params.get('location')
+    thisSession = session(tryout=thisTryout, startTime=startTime, endTime=endTime, location=location)
+    thisSession.save()
+    return Response(isValidSerializer(isValid(True)).data)
+
+@api_view(['POST'])
+def deleteSession(request):
+    sessionID = request.query_params.get('sessionID')
+    thisSession = session.objects.get(id=sessionID)
+    thisSession.delete()
+    return Response(isValidSerializer(isValid(True)).data)
+
+@api_view(['GET'])
+def listSessions(request):
+    tryoutID = request.query_params.get('tryoutID')
+    thisTryout = tryout.objects.get(id=tryoutID)
+    allSessions = session.objects.filter(tryout=thisTryout)
+    sessionIDs = []
+    sessionStarts = []
+    for thisSession in allSessions:
+        sessionIDs.insert(len(sessionIDs), thisSession.id)
+        sessionStarts.insert(len(session), thisSession.startTime)
+    return Response(listSessionsSerializer(sessionForList(sessionIDs,sessionStarts)).data)
+
+
+@api_view(['POST'])
+def createPlayer(request):
+    tryoutID = request.query_params.get('tryoutID')
+    firstName = request.query_params.get('firstName')
+    lastName = request.query_params.get('lastName')
+    email = request.query_params.get('email')
+    thisTryout = tryout.objects.get(id=tryoutID)
+    thisPlayer = player(tryout=thisTryout, firstName=firstName, lastName=lastName, email=email)
+    thisPlayer.save()
+    return Response(isValidSerializer(isValid(True)).data)
+
+@api_view(['POST'])
+def deletePlayer(request):
+    playerID = request.query_params.get('playerID')
+    thisPlayer = player.objects.get(id=playerID)
+    thisPlayer.delete()
+    return Response(isValidSerializer(isValid(True)).data)
+
+@api_view(['GET'])
+def listPlayers(request):
+    tryoutID = request.query_params.get('tryoutID')
+    thisTryout = tryout.objects.get(id=tryoutID)
+    allPlayers = player.objects.filter(tryout=thisTryout)
+    playerIDs = []
+    playerFirstNames = []
+    playerLastNames = []
+    for thisPlayer in allPlayers:
+        playerIDs.insert(len(playerIDs), thisPlayer.id)
+        playerFirstNames.insert(len(playerFirstNames), thisPlayer.firstName)
+        playerLastNames.insert(len(playerLastNames), thisPlayer.lastName)
+    return Response(listPlayersSerializer(playerForList(playerIDs,playerFirstNames,playerLastNames)).data)

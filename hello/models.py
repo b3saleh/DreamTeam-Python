@@ -10,8 +10,9 @@ class user(models.Model):
 
 
 class tryout(models.Model):
-    admin = models.ForeignKey(user, on_delete=models.CASCADE, related_name="my_tryouts", default=1)
+    admin = models.ForeignKey(user, on_delete=models.CASCADE, related_name="my_tryouts", default=0)
     name = models.CharField(max_length=30)
+    executives = models.ManyToManyField(user)
 
 
 class criterion(models.Model):
@@ -48,3 +49,4 @@ class session(models.Model):
     plan = models.FileField()
     startTime = models.DateTimeField()
     endTime = models.DateTimeField()
+    location = models.CharField(max_length=254)

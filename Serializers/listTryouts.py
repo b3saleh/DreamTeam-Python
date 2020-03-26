@@ -2,11 +2,11 @@ from rest_framework import serializers
 
 
 class tryoutForList(object):
-    def __init__(self, tryoutID, tryoutName):
-        self.tryoutID = tryoutID
-        self.tryoutName = tryoutName
+    def __init__(self, tryoutIDs, tryoutNames):
+        self.tryoutIDs = tryoutIDs
+        self.tryoutNames = tryoutNames
 
 
 class listTryoutsSerializer(serializers.Serializer):
-    tryoutID = serializers.CharField()
-    tryoutName = serializers.CharField()
+    tryoutIDs = serializers.ListField()
+    tryoutNames = serializers.ListField()
