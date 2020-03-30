@@ -31,7 +31,7 @@ def checkUser(request):
 @api_view(['GET'])
 def getUserInfo(request):
     userID = request.query_params.get('userID')
-    thisUser = user.objects.get(userID=userID)
+    thisUser = user.objects.get(id=userID)
     if thisUser is not None:
         return Response(userInfoSerializer(userInfo(thisUser.firstName, thisUser.lastName, thisUser.username, thisUser.email)).data)
     else:
