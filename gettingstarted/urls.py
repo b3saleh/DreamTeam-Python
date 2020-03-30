@@ -4,6 +4,7 @@ from hello import views
 urlpatterns = [
     path("", views.index, name='index'),
     path('checkUser/', views.checkUser, name='Check User'),
+    path('getUserInfo/', views.getUserInfo, name='Get User Info'),
     path('createUser/', views.createUser, name='Create User'),
     path('createTryout/', views.createTryout, name='Create a new Tryout'),
     path('deleteTryout/', views.deleteTryout, name='Delete tryout by ID'),

@@ -7,6 +7,7 @@ from Serializers.listTryouts import tryoutForList, listTryoutsSerializer
 from Serializers.listSessions import sessionForList, listSessionsSerializer
 from Serializers.listCriteria import criterionForList, listCriteriaSerializer
 from Serializers.listPlayers import playerForList, listPlayersSerializer
+from Serializers.userInfo import userInfoSerializer, userInfo
 from rest_framework.response import Response
 from django.db.models import Q
 
@@ -25,7 +26,16 @@ def checkUser(request):
     if thisUser is not None:
         return Response(userIDSerializer(userID(thisUser.id)).data)
     else:
-        return Response(userIDSerializer(userID(0)).data)
+        return Response(isValidSerializer(False).data)
+
+@api_view(['GET'])
+def getUserInfo(request):
+    userID = request.query_params.get('userID')
+    thisUser = user.objects.get(userID=userID)
+    if thisUser is not None:
+        return Response(userInfoSerializer(userInfo(thisUser.firstName, thisUser.lastName, thisUser.username, thisUser.email)).data)
+    else:
+        return Response(isValidSerializer(False).data)
 
 
 @api_view(['POST'])
