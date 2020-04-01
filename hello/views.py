@@ -52,7 +52,7 @@ def createUser(request):
 
 @api_view(['POST'])
 def createTryout(request):
-    userID = request.query_params.get('userID') # USE THIS LATER FOR INDIVIDUAL TRYOUT LISTS
+    userID = request.query_params.get('userID')
     thisUser = user.objects.get(id=userID)
     tryoutName = request.query_params.get('tryoutName')
     thisTryout = tryout(admin=thisUser, name=tryoutName)
