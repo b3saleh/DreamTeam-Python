@@ -17,4 +17,15 @@ urlpatterns = [
     path('createPlayer/', views.createPlayer, name='Create new player entry for a given tryout'),
     path('deletePlayer/', views.deletePlayer, name='Delete Player by ID'),
     path('listPlayers/', views.listPlayers, name='List all players for a tryout'),
+    path('submitEval/', views.submitEval, name="Evaluation Submission"),
+    path('postComment/', views.postComment, name="Posts a comment"),
+    path('createTeam/', views.createTeam, name="Create a New Team within a tryout"),
+    path('getEvals/', views.getEvals, name="Get Evaluation Info"),
+    path('getComments/', views.getComments,  name="Gets comments for a User"),
+    path('getTeamAverages/', views.getTeamAverages, name="Returns Averages for a given Team"),
+    path('addPlayerToTeam/', views.addPlayerToTeam, name="Add Player To a Team"),
+    path('releasePlayer/', views.removePlayerFromTeam, name="Release Player"),
+    path('availablePlayers/', views.getAvailablePlayers, name="Get Players Who Are Not On A Team"),
+    path('teamPlayers/', views.getTeamPlayers, name="Get All Players on a Given Team"),
+
 ]

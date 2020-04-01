@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import user, tryout, criterion, player, session
+from .models import user, tryout, criterion, player, session, evaluation, comment, team
 from rest_framework.decorators import api_view
 from Serializers.checkUser import userID, userIDSerializer
 from Serializers.isValid import isValid, isValidSerializer
@@ -8,6 +8,9 @@ from Serializers.listSessions import sessionForList, listSessionsSerializer
 from Serializers.listCriteria import criterionForList, listCriteriaSerializer
 from Serializers.listPlayers import playerForList, listPlayersSerializer
 from Serializers.userInfo import userInfoSerializer, userInfo
+from Serializers.getCriteria import gradesForList, listGradesSerializer
+from Serializers.getComments import commentForList, listCommentsSerializer
+from Serializers.getTeamAverages import criteriaAveragesList, teamAveragesSerializer
 from rest_framework.response import Response
 from django.db.models import Q
 
@@ -91,9 +94,11 @@ def listCriteria(request):
     thisTryout = tryout.objects.get(id=tryoutID)
     criteriaList = criterion.objects.filter(tryout=thisTryout)
     criteriaNames = []
+    criteriaIDs = []
     for thisCriterion in criteriaList:
         criteriaNames.insert(len(criteriaNames), thisCriterion.name)
-    return Response(listCriteriaSerializer(criterionForList(criteriaNames)).data)
+        criteriaIDs.insert(len(criteriaIDs), thisCriterion.id)
+    return Response(listCriteriaSerializer(criterionForList(criteriaNames, criteriaIDs)).data)
 
 
 @api_view(['POST'])
@@ -133,7 +138,7 @@ def listSessions(request):
     sessionStarts = []
     for thisSession in allSessions:
         sessionIDs.insert(len(sessionIDs), thisSession.id)
-        sessionStarts.insert(len(session), thisSession.startTime)
+        sessionStarts.insert(len(sessionStarts), thisSession.startTime)
     return Response(listSessionsSerializer(sessionForList(sessionIDs,sessionStarts)).data)
 
 
@@ -144,7 +149,7 @@ def createPlayer(request):
     lastName = request.query_params.get('lastName')
     email = request.query_params.get('email')
     thisTryout = tryout.objects.get(id=tryoutID)
-    thisPlayer = player(tryout=thisTryout, firstName=firstName, lastName=lastName, email=email)
+    thisPlayer = player(tryout=thisTryout, firstName=firstName, lastName=lastName, email=email, teamID=0)
     thisPlayer.save()
     return Response(isValidSerializer(isValid(True)).data)
 
@@ -168,3 +173,136 @@ def listPlayers(request):
         playerFirstNames.insert(len(playerFirstNames), thisPlayer.firstName)
         playerLastNames.insert(len(playerLastNames), thisPlayer.lastName)
     return Response(listPlayersSerializer(playerForList(playerIDs,playerFirstNames,playerLastNames)).data)
+
+@api_view(['POST'])
+def submitEval(request):
+    playerID = request.query_params.get('playerID')
+    thisPlayer = player.objects.get(id=playerID)
+    execID = request.query_params.get('userID')
+    thisExec = user.objects.get(id=execID)
+    criterionID = request.query_params.get('criterionID')
+    thisCriterion = criterion.objects.get(id=criterionID)
+    grade = request.query_params.get('grade')
+    thisEval = evaluation(player=thisPlayer, exec=thisExec, criterion=thisCriterion)
+    thisEval.grade = grade
+    thisEval.save()
+
+@api_view(['POST'])
+def postComment(request):
+    playerID = request.query_params.get('playerID')
+    thisPlayer = player.objects.get(id=playerID)
+    execID = request.query_params.get('userID')
+    thisExec = user.objects.get(id=execID)
+    commentText = request.query_params.get('commentText')
+    thisComment = comment(player=thisPlayer, exec=thisExec)
+    thisComment.text = commentText
+    thisComment.save()
+
+@api_view(['POST'])
+def createTeam(request):
+    tryoutID = request.query_params.get('tryoutID')
+    teamName = request.query_params.get('teamName')
+    thisTryout = tryout.objects.get(id=tryoutID)
+    thisTeam = team(tryout=thisTryout, name=teamName)
+    thisTeam.save()
+
+@api_view(['GET'])
+def getEvals(request):
+    playerID = request.query_params.get('playerID')
+    thisPlayer = player.objects.get(id=playerID)
+    userID =  request.query_params.get('userID')
+    thisUser = user.objects.get(id=userID)
+    criteriaList = criterion.objects.filter(player=thisPlayer, exec=thisUser)
+    criteriaGrades = []
+    criteriaIDs = []
+    for thisCriterion in criteriaList:
+        criteriaGrades.insert(len(criteriaGrades), thisCriterion.grade)
+        criteriaIDs.insert(len(criteriaIDs), thisCriterion.id)
+    return Response(listGradesSerializer(gradesForList(criteriaGrades, criteriaIDs)).data)
+
+@api_view(['GET'])
+def getComments(request):
+    playerID = request.query_params.get('playerID')
+    thisPlayer = player.objects.get(id=playerID)
+    commentList = comment.objects.filter(player=thisPlayer)
+    commentIDs = []
+    comments = []
+    commenters = []
+    commentTimes = []
+    for thisComment in commentList:
+        commentIDs.insert(len(commentIDs), thisComment.id)
+        comments.insert(len(comments), thisComment.text)
+        commenters.insert(len(commenters), thisComment.exec)
+        commentTimes.insert(len(commentTimes), thisComment.createdAt)
+    return Response(listCommentsSerializer(commentForList(commentIDs, comments, commenters, commentTimes)).data)
+
+
+@api_view(['GET'])
+def getTeamAverages(request):
+    teamID = request.query_params.get('teamID')
+    thisTeam = team.objects.get(id=teamID)
+    thisTryout = tryout.objects.get(id=thisTeam.tryout_id)
+    criteriaList = criterion.objects.filter(tryout=thisTryout)
+    criteriaIDs = []
+    criteriaNames = []
+    criteriaAverages = []
+    playerList = player.objects.filter(teamID=thisTeam.id)
+    for thisCriterion in criteriaList:
+        playerCount = len(playerList)
+        criteriaSum = 0
+        for thisPlayer in playerList:
+            evalList = evaluation.objects.filter(player=thisPlayer)
+            evalCount = len(evalList)
+            evalSum = 0
+            for thisEval in evalList:
+                evalSum += thisEval.grade
+            criteriaSum += evalSum / evalCount
+        thisCriteriaAverage = criteriaSum / playerCount
+        criteriaIDs.insert(len(criteriaIDs), thisCriterion.id)
+        criteriaNames.insert(len(criteriaNames), thisCriterion.name)
+        criteriaAverages.insert(len(criteriaAverages), thisCriteriaAverage)
+    return Response(teamAveragesSerializer(criteriaAveragesList(criteriaIDs, criteriaNames, criteriaAverages)).data)
+
+@api_view['POST']
+def addPlayerToTeam(request):
+    teamID = request.query_params.get('teamID')
+    playerID = request.query_params.get('playerID')
+    thisPlayer = team.objects.get(id=playerID)
+    thisPlayer.teamID = teamID
+    thisPlayer.save()
+
+@api_view['POST']
+def removePlayerFromTeam(request):
+    playerID = request.query_params.get('playerID')
+    thisPlayer = team.objects.get(id=playerID)
+    thisPlayer.teamID = 0
+    thisPlayer.save()
+
+@api_view['GET']
+def getAvailablePlayers(request):
+    tryoutID = request.query_params.get('tryoutID')
+    thisTryout = tryout.objects.get(id=tryoutID)
+    allPlayers = player.objects.filter(tryout=thisTryout, teamID=0)
+    playerIDs = []
+    playerFirstNames = []
+    playerLastNames = []
+    for thisPlayer in allPlayers:
+        playerIDs.insert(len(playerIDs), thisPlayer.id)
+        playerFirstNames.insert(len(playerFirstNames), thisPlayer.firstName)
+        playerLastNames.insert(len(playerLastNames), thisPlayer.lastName)
+    return Response(listPlayersSerializer(playerForList(playerIDs, playerFirstNames, playerLastNames)).data)
+
+@api_view['POST']
+def getTeamPlayers(request):
+    teamID = request.query_params.get('teamID')
+    thisTeam = team.objects.get(id=teamID)
+    thisTryout = tryout.objects.get(id=thisTeam.tryout_id)
+    allPlayers = player.objects.filter(tryout=thisTryout, teamID=teamID)
+    playerIDs = []
+    playerFirstNames = []
+    playerLastNames = []
+    for thisPlayer in allPlayers:
+        playerIDs.insert(len(playerIDs), thisPlayer.id)
+        playerFirstNames.insert(len(playerFirstNames), thisPlayer.firstName)
+        playerLastNames.insert(len(playerLastNames), thisPlayer.lastName)
+    return Response(listPlayersSerializer(playerForList(playerIDs, playerFirstNames, playerLastNames)).data)

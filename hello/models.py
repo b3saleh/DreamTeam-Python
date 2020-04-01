@@ -25,16 +25,19 @@ class player(models.Model):
     firstName = models.CharField(max_length=30)
     lastName = models.CharField(max_length=30)
     email = models.EmailField(max_length=254)
+    teamID = models.IntegerField(default=0)
 
 
-class evalution(models.Model):
+class evaluation(models.Model):
     player = models.ForeignKey(player, on_delete=models.CASCADE, related_name="evaluations")
+    exec = models.ForeignKey(user, on_delete=models.CASCADE, related_name="playerEvaluations")
     criterion = models.ForeignKey(criterion, on_delete=models.CASCADE)
     grade = models.PositiveSmallIntegerField()
 
 
 class comment(models.Model):
     player = models.ForeignKey(player, on_delete=models.CASCADE, related_name="comments")
+    exec = models.ForeignKey(user, on_delete=models.CASCADE, related_name="playerComments")
     text = models.TextField()
     createdAt = models.DateTimeField(auto_now_add=True)
 
