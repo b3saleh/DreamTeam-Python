@@ -263,7 +263,7 @@ def getTeamAverages(request):
         criteriaAverages.insert(len(criteriaAverages), thisCriteriaAverage)
     return Response(teamAveragesSerializer(criteriaAveragesList(criteriaIDs, criteriaNames, criteriaAverages)).data)
 
-@api_view['POST']
+@api_view(['POST'])
 def addPlayerToTeam(request):
     teamID = request.query_params.get('teamID')
     playerID = request.query_params.get('playerID')
@@ -271,14 +271,14 @@ def addPlayerToTeam(request):
     thisPlayer.teamID = teamID
     thisPlayer.save()
 
-@api_view['POST']
+@api_view(['POST'])
 def removePlayerFromTeam(request):
     playerID = request.query_params.get('playerID')
     thisPlayer = team.objects.get(id=playerID)
     thisPlayer.teamID = 0
     thisPlayer.save()
 
-@api_view['GET']
+@api_view(['GET'])
 def getAvailablePlayers(request):
     tryoutID = request.query_params.get('tryoutID')
     thisTryout = tryout.objects.get(id=tryoutID)
@@ -292,7 +292,7 @@ def getAvailablePlayers(request):
         playerLastNames.insert(len(playerLastNames), thisPlayer.lastName)
     return Response(listPlayersSerializer(playerForList(playerIDs, playerFirstNames, playerLastNames)).data)
 
-@api_view['POST']
+@api_view(['POST'])
 def getTeamPlayers(request):
     teamID = request.query_params.get('teamID')
     thisTeam = team.objects.get(id=teamID)
