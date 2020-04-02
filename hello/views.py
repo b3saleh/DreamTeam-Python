@@ -181,7 +181,7 @@ def submitEval(request):
     thisExec = user.objects.get(id=execID)
     criterionID = request.query_params.get('criterionID')
     thisCriterion = criterion.objects.get(id=criterionID)
-    grade = request.query_params.get('grade')
+    grade, created = request.query_params.get('grade')
     thisEval = evaluation.objects.get_or_create(player=thisPlayer, exec=thisExec, criterion=thisCriterion)
     thisEval.grade = grade
     thisEval.save()
