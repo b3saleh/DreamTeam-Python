@@ -312,9 +312,7 @@ def getAvailablePlayers(request):
 @api_view(['GET'])
 def getTeamPlayers(request):
     teamID = request.query_params.get('teamID')
-    thisTeam = team.objects.get(id=teamID)
-    thisTryout = tryout.objects.get(id=thisTeam.tryout_id)
-    allPlayers = player.objects.filter(tryout=thisTryout, teamID=teamID)
+    allPlayers = player.objects.filter(teamID=teamID)
     playerIDs = []
     playerFirstNames = []
     playerLastNames = []
