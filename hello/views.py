@@ -296,7 +296,7 @@ def getAvailablePlayers(request):
         playerLastNames.insert(len(playerLastNames), thisPlayer.lastName)
     return Response(listPlayersSerializer(playerForList(playerIDs, playerFirstNames, playerLastNames)).data)
 
-@api_view(['POST'])
+@api_view(['GET'])
 def getTeamPlayers(request):
     teamID = request.query_params.get('teamID')
     thisTeam = team.objects.get(id=teamID)
