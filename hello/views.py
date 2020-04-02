@@ -214,12 +214,12 @@ def getEvals(request):
     thisPlayer = player.objects.get(id=playerID)
     userID =  request.query_params.get('userID')
     thisUser = user.objects.get(id=userID)
-    criteriaList = criterion.objects.filter(player=thisPlayer, exec=thisUser)
+    evalList = evaluation.objects.filter(player=thisPlayer, exec=thisUser)
     criteriaGrades = []
     criteriaIDs = []
-    for thisCriterion in criteriaList:
-        criteriaGrades.insert(len(criteriaGrades), thisCriterion.grade)
-        criteriaIDs.insert(len(criteriaIDs), thisCriterion.id)
+    for thisEval in evalList:
+        criteriaGrades.insert(len(criteriaGrades), thisEval.grade)
+        criteriaIDs.insert(len(criteriaIDs), thisEval.criterion_id)
     return Response(listGradesSerializer(gradesForList(criteriaGrades, criteriaIDs)).data)
 
 @api_view(['GET'])
