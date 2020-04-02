@@ -185,6 +185,7 @@ def submitEval(request):
     thisEval = evaluation(player=thisPlayer, exec=thisExec, criterion=thisCriterion)
     thisEval.grade = grade
     thisEval.save()
+    return Response(isValidSerializer(isValid(True)).data)
 
 @api_view(['POST'])
 def postComment(request):
@@ -196,6 +197,7 @@ def postComment(request):
     thisComment = comment(player=thisPlayer, exec=thisExec)
     thisComment.text = commentText
     thisComment.save()
+    return Response(isValidSerializer(isValid(True)).data)
 
 @api_view(['POST'])
 def createTeam(request):
@@ -204,6 +206,7 @@ def createTeam(request):
     thisTryout = tryout.objects.get(id=tryoutID)
     thisTeam = team(tryout=thisTryout, name=teamName)
     thisTeam.save()
+    return Response(isValidSerializer(isValid(True)).data)
 
 @api_view(['GET'])
 def getEvals(request):
@@ -269,6 +272,7 @@ def addPlayerToTeam(request):
     thisPlayer = team.objects.get(id=playerID)
     thisPlayer.teamID = teamID
     thisPlayer.save()
+    return Response(isValidSerializer(isValid(True)).data)
 
 @api_view(['POST'])
 def removePlayerFromTeam(request):
@@ -276,6 +280,7 @@ def removePlayerFromTeam(request):
     thisPlayer = team.objects.get(id=playerID)
     thisPlayer.teamID = 0
     thisPlayer.save()
+    return Response(isValidSerializer(isValid(True)).data)
 
 @api_view(['GET'])
 def getAvailablePlayers(request):
