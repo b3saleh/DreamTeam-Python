@@ -284,7 +284,7 @@ def addPlayerToTeam(request):
     teamID = request.query_params.get('teamID')
     playerID = request.query_params.get('playerID')
     thisPlayer = team.objects.get(id=playerID)
-    thisPlayer.teamID = teamID
+    thisPlayer.update(teamID=teamID)
     thisPlayer.save()
     return Response(isValidSerializer(isValid(True)).data)
 
