@@ -12,6 +12,7 @@ from Serializers.getCriteria import gradesForList, listGradesSerializer
 from Serializers.getComments import commentForList, listCommentsSerializer
 from Serializers.getTeamAverages import criteriaAveragesList, teamAveragesSerializer
 from Serializers.listTeams import teamListSerializer, listOfTeams
+from Serializers.playerSerializer import playerInfo, playerInfoSerializer
 from rest_framework.response import Response
 from django.db.models import Q
 
@@ -326,4 +327,4 @@ def getTeamPlayers(request):
 def test(request):
     playerID = request.query_params.get('playerID')
     thisPlayer = player.objects.get(id=playerID)
-    return Response(listPlayersSerializer(playerForList(thisPlayer.teamID, thisPlayer.firstName, thisPlayer.lastName)).data)
+    return Response(playerInfoSerializer(playerInfo(thisPlayer)).data)
