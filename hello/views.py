@@ -11,6 +11,7 @@ from Serializers.userInfo import userInfoSerializer, userInfo
 from Serializers.getCriteria import gradesForList, listGradesSerializer
 from Serializers.getComments import commentForList, listCommentsSerializer
 from Serializers.getTeamAverages import criteriaAveragesList, teamAveragesSerializer
+from Serializers.listTeams import teamListSerializer, listOfTeams
 from rest_framework.response import Response
 from django.db.models import Q
 
@@ -207,6 +208,18 @@ def createTeam(request):
     thisTeam = team(tryout=thisTryout, name=teamName)
     thisTeam.save()
     return Response(isValidSerializer(isValid(True)).data)
+
+@api_view(['GET'])
+def listTeams(request):
+    tryoutID = request.query_params.get('tryoutID')
+    thisTryout = tryout.objects.get(id=tryoutID)
+    teams = team.objects.filter(tyrout=thisTryout)
+    teamIDs = []
+    teamNames = []
+    for thisTeam in teams:
+        teamIDs.insert(len(teamIDs), thisTeam.id)
+        teamNames.insert(len(teamNames), thisTeam.name)
+    return Response(teamListSerializer(listOfTeams(teamIDs, teamNames)).data)
 
 @api_view(['GET'])
 def getEvals(request):
