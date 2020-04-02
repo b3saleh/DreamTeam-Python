@@ -291,7 +291,7 @@ def addPlayerToTeam(request):
 def removePlayerFromTeam(request):
     playerID = request.query_params.get('playerID')
     thisPlayer = team.objects.get(id=playerID)
-    thisPlayer.teamID = 0
+    thisPlayer.update(teamID=0)
     thisPlayer.save()
     return Response(isValidSerializer(isValid(True)).data)
 
@@ -321,3 +321,7 @@ def getTeamPlayers(request):
         playerFirstNames.insert(len(playerFirstNames), thisPlayer.firstName)
         playerLastNames.insert(len(playerLastNames), thisPlayer.lastName)
     return Response(listPlayersSerializer(playerForList(playerIDs, playerFirstNames, playerLastNames)).data)
+
+@api_view(['GET'])
+def test(request):
+    playerID = request.query_params.get
