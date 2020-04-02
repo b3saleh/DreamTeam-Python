@@ -104,11 +104,10 @@ def listCriteria(request):
 @api_view(['POST'])
 def addExecs(request):
     tryoutID = request.query_params.get('tryoutID')
-    execEmails = request.GET.getlist('execEmails')
+    execEmail = request.query_params.get('execEmail')
     thisTryout = tryout.objects.get(id=tryoutID)
-    for thisEmail in execEmails:
-        thisExec = user.objects.get(email=thisEmail)
-        thisTryout.executives.add(thisExec)
+    thisExec = user.objects.get(email=execEmail)
+    thisTryout.executives.add(thisExec)
     return Response(isValidSerializer(isValid(True)).data)
 
 @api_view(['POST'])
