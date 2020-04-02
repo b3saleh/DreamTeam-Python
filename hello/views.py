@@ -213,7 +213,7 @@ def createTeam(request):
 def listTeams(request):
     tryoutID = request.query_params.get('tryoutID')
     thisTryout = tryout.objects.get(id=tryoutID)
-    teams = team.objects.filter(tyrout=thisTryout)
+    teams = team.objects.filter(tryout=thisTryout)
     teamIDs = []
     teamNames = []
     for thisTeam in teams:
