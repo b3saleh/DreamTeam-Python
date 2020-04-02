@@ -182,7 +182,7 @@ def submitEval(request):
     criterionID = request.query_params.get('criterionID')
     thisCriterion = criterion.objects.get(id=criterionID)
     grade = request.query_params.get('grade')
-    thisEval, created = evaluation.objects.get_or_create(player=thisPlayer, exec=thisExec, criterion=thisCriterion)
+    thisEval, created = evaluation.objects.get_or_create(player=thisPlayer, exec=thisExec, criterion=thisCriterion, defaults={'grade': 3})
     thisEval.grade = grade
     thisEval.save()
     return Response(isValidSerializer(isValid(True)).data)
