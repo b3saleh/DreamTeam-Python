@@ -324,4 +324,6 @@ def getTeamPlayers(request):
 
 @api_view(['GET'])
 def test(request):
-    playerID = request.query_params.get
+    playerID = request.query_params.get('playerID')
+    thisPlayer = player.objects.get(id=playerID)
+    return Response(listPlayersSerializer(playerForList(thisPlayer.teamID, thisPlayer.firstName, thisPlayer.lastName)).data)

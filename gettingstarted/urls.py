@@ -28,4 +28,5 @@ urlpatterns = [
     path('availablePlayers/', views.getAvailablePlayers, name="Get Players Who Are Not On A Team"),
     path('teamPlayers/', views.getTeamPlayers, name="Get All Players on a Given Team"),
     path('listTeams/', views.listTeams, name="List All Teams for a Tryout"),
+    path('test/', views.test, name="test")
 ]
