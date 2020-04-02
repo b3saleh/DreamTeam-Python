@@ -250,7 +250,7 @@ def getComments(request):
         comments.insert(len(comments), thisComment.text)
         commenters.insert(len(commenters), thisComment.exec)
         commentTimes.insert(len(commentTimes), thisComment.createdAt)
-    return Response(listCommentsSerializer(commentForList(commentIDs, comments, commenters, commentTimes)).data)
+    return Response(listCommentsSerializer(commentForList(commentIDs, comments, commenters.id, commentTimes)).data)
 
 
 @api_view(['GET'])
@@ -283,7 +283,7 @@ def getTeamAverages(request):
 def addPlayerToTeam(request):
     teamID = request.query_params.get('teamID')
     playerID = request.query_params.get('playerID')
-    thisPlayer = team.objects.get(id=playerID)
+    thisPlayer = player.objects.get(id=playerID)
     thisPlayer.update(teamID=teamID)
     thisPlayer.save()
     return Response(isValidSerializer(isValid(True)).data)
@@ -291,7 +291,7 @@ def addPlayerToTeam(request):
 @api_view(['POST'])
 def removePlayerFromTeam(request):
     playerID = request.query_params.get('playerID')
-    thisPlayer = team.objects.get(id=playerID)
+    thisPlayer = player.objects.get(id=playerID)
     thisPlayer.update(teamID=0)
     thisPlayer.save()
     return Response(isValidSerializer(isValid(True)).data)
