@@ -248,9 +248,9 @@ def getComments(request):
     for thisComment in commentList:
         commentIDs.insert(len(commentIDs), thisComment.id)
         comments.insert(len(comments), thisComment.text)
-        commenters.insert(len(commenters), thisComment.exec)
+        commenters.insert(len(commenters), thisComment.exec_id)
         commentTimes.insert(len(commentTimes), thisComment.createdAt)
-    return Response(listCommentsSerializer(commentForList(commentIDs, comments, commenters.id, commentTimes)).data)
+    return Response(listCommentsSerializer(commentForList(commentIDs, comments, commenters, commentTimes)).data)
 
 
 @api_view(['GET'])
@@ -284,7 +284,7 @@ def addPlayerToTeam(request):
     teamID = request.query_params.get('teamID')
     playerID = request.query_params.get('playerID')
     thisPlayer = player.objects.get(id=playerID)
-    thisPlayer.update(teamID=teamID)
+    thisPlayer.teamID = teamID
     thisPlayer.save()
     return Response(isValidSerializer(isValid(True)).data)
 
@@ -292,7 +292,7 @@ def addPlayerToTeam(request):
 def removePlayerFromTeam(request):
     playerID = request.query_params.get('playerID')
     thisPlayer = player.objects.get(id=playerID)
-    thisPlayer.update(teamID=0)
+    thisPlayer.teamID = 0
     thisPlayer.save()
     return Response(isValidSerializer(isValid(True)).data)
 
