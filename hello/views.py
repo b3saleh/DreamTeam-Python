@@ -267,7 +267,7 @@ def getTeamAverages(request):
         playerCount = len(playerList)
         criteriaSum = 0
         for thisPlayer in playerList:
-            evalList = evaluation.objects.filter(player=thisPlayer)
+            evalList = evaluation.objects.filter(player=thisPlayer, criterion=thisCriterion)
             evalCount = len(evalList)
             evalSum = 0
             for thisEval in evalList:
