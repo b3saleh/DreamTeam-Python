@@ -245,6 +245,8 @@ def getComments(request):
     comments = []
     commenters = []
     commentTimes = []
+    commenterFirstNames = []
+    commenterLastNames = []
     for thisComment in commentList:
         commentIDs.insert(len(commentIDs), thisComment.id)
         comments.insert(len(comments), thisComment.text)
