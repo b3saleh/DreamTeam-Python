@@ -248,9 +248,11 @@ def getComments(request):
     for thisComment in commentList:
         commentIDs.insert(len(commentIDs), thisComment.id)
         comments.insert(len(comments), thisComment.text)
-        commenters.insert(len(commenters), thisComment.exec_id)
+        commenter = user.objects.get(id=thisComment.exec_id)
+        commenterFirstNames.insert(len(commenters), commenter.firstName)
+        commenterLastNames.insert(len(commenters), commenter.lastName)
         commentTimes.insert(len(commentTimes), thisComment.createdAt)
-    return Response(listCommentsSerializer(commentForList(commentIDs, comments, commenters, commentTimes)).data)
+    return Response(listCommentsSerializer(commentForList(commentIDs, comments, commenterFirstNames, commenterLastNames, commentTimes)).data)
 
 
 @api_view(['GET'])
