@@ -9,7 +9,6 @@ class commentForList(object):
         self.commenterLastNames = commenterLastNames
         self.commentTimes = commentTimes
 
-
 class listCommentsSerializer(serializers.Serializer):
     commentIDs = serializers.ListField()
     comments = serializers.ListField()
