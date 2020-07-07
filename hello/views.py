@@ -220,6 +220,10 @@ def deleteTeam(request):
     teamID = request.query_params.get('teamID')
     thisTeam = team.objects.get(id=teamID)
     thisTeam.delete()
+    allPlayers = player.objects.filter(teamID=teamID)
+    for thisPlayer in allPlayers:
+        thisPlayer.teamID = 0
+        thisPlayer.save()
     return Response(isValidSerializer(isValid(True)).data)
 
 @api_view(['GET'])
