@@ -22,6 +22,7 @@ urlpatterns = [
     path('createTeam/', views.createTeam, name="Create a New Team within a tryout"),
     path('getEvals/', views.getEvals, name="Get Evaluation Info"),
     path('getComments/', views.getComments,  name="Gets comments for a User"),
+    path('deleteComment/', views.deleteComment,  name="Deletes A Comment"),
     path('getTeamAverages/', views.getTeamAverages, name="Returns Averages for a given Team"),
     path('addPlayerToTeam/', views.addPlayerToTeam, name="Add Player To a Team"),
     path('releasePlayer/', views.removePlayerFromTeam, name="Release Player"),

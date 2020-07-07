@@ -142,7 +142,6 @@ def listSessions(request):
         sessionStarts.insert(len(sessionStarts), thisSession.startTime)
     return Response(listSessionsSerializer(sessionForList(sessionIDs,sessionStarts)).data)
 
-
 @api_view(['POST'])
 def createPlayer(request):
     tryoutID = request.query_params.get('tryoutID')
@@ -260,6 +259,13 @@ def getComments(request):
         commenterLastNames.insert(len(commenterLastNames), commenter.lastName)
         commentTimes.insert(len(commentTimes), thisComment.createdAt)
     return Response(listCommentsSerializer(commentForList(commentIDs, comments, commenterFirstNames, commenterLastNames, commentTimes)).data)
+
+@api_view(['POST'])
+def deleteComment(request):
+    commentID = request.query_params.get('commentID')
+    thisComment = comment.objects.get(id=commentID)
+    thisComment.delete()
+    return Response(isValidSerializer(isValid(True)).data)
 
 
 @api_view(['GET'])
