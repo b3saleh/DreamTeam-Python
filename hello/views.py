@@ -251,14 +251,16 @@ def getComments(request):
     commentTimes = []
     commenterFirstNames = []
     commenterLastNames = []
+    commenterIDs = []
     for thisComment in commentList:
         commentIDs.insert(len(commentIDs), thisComment.id)
         comments.insert(len(comments), thisComment.text)
         commenter = user.objects.get(id=thisComment.exec_id)
         commenterFirstNames.insert(len(commenterFirstNames), commenter.firstName)
         commenterLastNames.insert(len(commenterLastNames), commenter.lastName)
+        commenterIDs.insert(len(commenterIDs), commenter.id)
         commentTimes.insert(len(commentTimes), thisComment.createdAt)
-    return Response(listCommentsSerializer(commentForList(commentIDs, comments, commenterFirstNames, commenterLastNames, commentTimes)).data)
+    return Response(listCommentsSerializer(commentForList(commentIDs, comments, commenterFirstNames, commenterLastNames, commenterIDs, commentTimes)).data)
 
 @api_view(['POST'])
 def deleteComment(request):
