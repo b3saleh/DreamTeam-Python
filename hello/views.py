@@ -325,7 +325,7 @@ def getAvailablePlayers(request):
         playerIDs.insert(len(playerIDs), thisPlayer.id)
         playerFirstNames.insert(len(playerFirstNames), thisPlayer.firstName)
         playerLastNames.insert(len(playerLastNames), thisPlayer.lastName)
-    return Response(listPlayersSerializer(playerForList(playerIDs, playerFirstNames, playerLastNames)).data)
+    return Response(listPlayersSerializer(playerForList(playerIDs, playerFirstNames, playerLastNames, [])).data)
 
 @api_view(['GET'])
 def getTeamPlayers(request):
@@ -338,7 +338,7 @@ def getTeamPlayers(request):
         playerIDs.insert(len(playerIDs), thisPlayer.id)
         playerFirstNames.insert(len(playerFirstNames), thisPlayer.firstName)
         playerLastNames.insert(len(playerLastNames), thisPlayer.lastName)
-    return Response(listPlayersSerializer(playerForList(playerIDs, playerFirstNames, playerLastNames)).data)
+    return Response(listPlayersSerializer(playerForList(playerIDs, playerFirstNames, playerLastNames, [])).data)
 
 @api_view(['GET'])
 def test(request):
