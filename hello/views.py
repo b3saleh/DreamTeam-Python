@@ -249,7 +249,6 @@ def getComments(request):
     commentList = comment.objects.filter(player=thisPlayer)
     commentIDs = []
     comments = []
-    commenters = []
     commentTimes = []
     commenterFirstNames = []
     commenterLastNames = []
@@ -257,8 +256,8 @@ def getComments(request):
         commentIDs.insert(len(commentIDs), thisComment.id)
         comments.insert(len(comments), thisComment.text)
         commenter = user.objects.get(id=thisComment.exec_id)
-        commenterFirstNames.insert(len(commenters), commenter.firstName)
-        commenterLastNames.insert(len(commenters), commenter.lastName)
+        commenterFirstNames.insert(len(commenterFirstNames), commenter.firstName)
+        commenterLastNames.insert(len(commenterLastNames), commenter.lastName)
         commentTimes.insert(len(commentTimes), thisComment.createdAt)
     return Response(listCommentsSerializer(commentForList(commentIDs, comments, commenterFirstNames, commenterLastNames, commentTimes)).data)
 
