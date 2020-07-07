@@ -20,6 +20,7 @@ urlpatterns = [
     path('submitEval/', views.submitEval, name="Evaluation Submission"),
     path('postComment/', views.postComment, name="Posts a comment"),
     path('createTeam/', views.createTeam, name="Create a New Team within a tryout"),
+    path('deleteTeam/', views.deleteTeam,  name="Deletes A Team"),
     path('getEvals/', views.getEvals, name="Get Evaluation Info"),
     path('getComments/', views.getComments,  name="Gets comments for a User"),
     path('deleteComment/', views.deleteComment,  name="Deletes A Comment"),

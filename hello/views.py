@@ -215,6 +215,13 @@ def createTeam(request):
     thisTeam.save()
     return Response(isValidSerializer(isValid(True)).data)
 
+@api_view(['POST'])
+def deleteTeam(request):
+    teamID = request.query_params.get('teamID')
+    thisTeam = team.objects.get(id=teamID)
+    thisTeam.delete()
+    return Response(isValidSerializer(isValid(True)).data)
+
 @api_view(['GET'])
 def listTeams(request):
     tryoutID = request.query_params.get('tryoutID')
