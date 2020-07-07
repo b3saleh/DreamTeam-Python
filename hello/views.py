@@ -169,11 +169,17 @@ def listPlayers(request):
     playerIDs = []
     playerFirstNames = []
     playerLastNames = []
+    playerTeams = []
     for thisPlayer in allPlayers:
         playerIDs.insert(len(playerIDs), thisPlayer.id)
         playerFirstNames.insert(len(playerFirstNames), thisPlayer.firstName)
         playerLastNames.insert(len(playerLastNames), thisPlayer.lastName)
-    return Response(listPlayersSerializer(playerForList(playerIDs,playerFirstNames,playerLastNames)).data)
+        if thisPlayer.teamID is 0:
+            playerTeams.insert(len(playerTeams), None)
+        else:
+            thisTeam = team.objects.get(id=thisPlayer.teamID)
+            playerTeams.insert(len(playerTeams), thisTeam.name)
+    return Response(listPlayersSerializer(playerForList(playerIDs,playerFirstNames,playerLastNames,playerTeams)).data)
 
 @api_view(['POST'])
 def submitEval(request):
