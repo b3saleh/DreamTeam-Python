@@ -50,6 +50,8 @@ def createUser(request):
     email = request.query_params.get('email')
     firstName = request.query_params.get('firstName')
     lastName = request.query_params.get('lastName')
+    if user.objects.get(username=username):
+        return Response(isValidSerializer(isValid(False)).data)
     thisUser = user(username=username, password=password, email=email, firstName=firstName, lastName=lastName)
     thisUser.save()
     return Response(isValidSerializer(isValid(True)).data)
