@@ -54,9 +54,13 @@ def createUser(request):
         if user.objects.get(username=username):
             return Response(isValidSerializer(isValid(False)).data)
     except:
-        thisUser = user(username=username, password=password, email=email, firstName=firstName, lastName=lastName)
-        thisUser.save()
-        return Response(isValidSerializer(isValid(True)).data)
+        try:
+            if user.objects.get(email=email):
+                return Response(isValidSerializer(isValid(False)).data)
+        except:
+            thisUser = user(username=username, password=password, email=email, firstName=firstName, lastName=lastName)
+            thisUser.save()
+            return Response(isValidSerializer(isValid(True)).data)
 
 
 @api_view(['POST'])
